@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import rospy
 from std_msgs.msg import Empty, UInt8, Bool
 from std_msgs.msg import UInt8MultiArray
@@ -14,6 +14,7 @@ import math
 import numpy as np
 import threading
 import time
+import av
 from tellopy._internal import tello
 from tellopy._internal import error
 from tellopy._internal import protocol
@@ -473,7 +474,7 @@ class TelloNode(tello.Tello):
         self.pub_caminfo.publish(self.caminfo)        
 
     def framegrabber_loop(self):
-        import av #Import here as 'hack' to prevent troublesome install of PyAV when not used
+         #Import here as 'hack' to prevent troublesome install of PyAV when not used
         # Repeatedly try to connect
         vs = self.get_video_stream()
         while self.state != self.STATE_QUIT:
