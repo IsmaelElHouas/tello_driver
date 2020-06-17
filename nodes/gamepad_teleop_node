@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 import rospy
 from std_msgs.msg import Empty, UInt8, Bool
 from sensor_msgs.msg import Joy
@@ -31,71 +31,40 @@ class GamepadState:
         self.LT = 0.  # 1.0: idle, -1.0: depressed
         self.RT = 0.  # 1.0: idle, -1.0: depressed
 
-    def parse_ps3_usb(self, msg):
-        if len(msg.buttons) != 17 or len(msg.axes) != 6:
+
+    def parse_ps4_usb(self, msg):#Isma
+        if len(msg.buttons) != 14 or len(msg.axes) != 18:
             raise ValueError('Invalid number of buttons (%d) or axes (%d)' % (
                 len(msg.buttons), len(msg.axes)))
-        self.Cr = msg.buttons[0]
-        self.Ci = msg.buttons[1]
-        self.Tr = msg.buttons[2]
-        self.Sq = msg.buttons[3]
-        self.L1 = msg.buttons[4]
-        self.R1 = msg.buttons[5]
+        self.L3 = msg.buttons[10]
+        self.R3 = msg.buttons[11]
+        self.DU = msg.axes[7]#
+        self.DR = msg.axes[6]#
+        self.DD = msg.axes[7]#
+        self.DL = msg.axes[6]#
         self.L2 = msg.buttons[6]
         self.R2 = msg.buttons[7]
         self.Select = msg.buttons[8]
         self.Start = msg.buttons[9]
-        self.Sync = msg.buttons[10]
-        self.L3 = msg.buttons[11]
-        self.R3 = msg.buttons[12]
-        self.DU = msg.buttons[13]
-        self.DD = msg.buttons[14]
-        self.DL = msg.buttons[15]
-        self.DR = msg.buttons[16]
-        self.LX = msg.axes[0]
-        self.LY = msg.axes[1]
-        self.LT = msg.axes[2]
-        self.RX = msg.axes[3]
-        self.RY = msg.axes[4]
-        self.RT = msg.axes[5]
-
-    def parse_ps3_usb2(self, msg):
-        if len(msg.buttons) != 19 or len(msg.axes) != 27:
-            raise ValueError('Invalid number of buttons (%d) or axes (%d)' % (
-                len(msg.buttons), len(msg.axes)))
-        self.Select = msg.buttons[0]
-        self.L3 = msg.buttons[1]
-        self.R3 = msg.buttons[2]
-        self.Start = msg.buttons[3]
-        self.DU = msg.buttons[4]
-        self.DR = msg.buttons[5]
-        self.DD = msg.buttons[6]
-        self.DL = msg.buttons[7]
-        self.L2 = msg.buttons[8]
-        self.R2 = msg.buttons[9]
-        self.L1 = msg.buttons[10]
-        self.R1 = msg.buttons[11]
-        self.Tr = msg.buttons[12]
-        self.Ci = msg.buttons[13]
-        self.Cr = msg.buttons[14]
-        self.Sq = msg.buttons[15]
-        self.Sync = msg.buttons[16]
+        self.Sync = msg.buttons[12]
+        self.L1 = msg.buttons[4]#
+        self.R1 = msg.buttons[5]#
+        self.Tr = msg.buttons[3]#
+        self.Ci = msg.buttons[2]#
+        self.Cr = msg.buttons[1]#
+        self.Sq = msg.buttons[0]#
         self.LX = msg.axes[0]
         self.LY = msg.axes[1]
         self.LT = msg.axes[12]
         self.RX = msg.axes[2]
-        self.RY = msg.axes[3]
+        self.RY = msg.axes[5]
         self.RT = msg.axes[13]
 
     def parse(self, msg):
         err = None
         try:
-            return self.parse_ps3_usb(msg)
-        except ValueError, e:
-            err = e
-        try:
-            return self.parse_ps3_usb2(msg)
-        except ValueError, e:
+            return self.parse_ps4_usb(msg) #Isma
+        except ValueError as e:
             err = e
         raise err
 
@@ -158,43 +127,43 @@ class GamepadTeleopNode:
         self.joy_state.parse(msg)
 
         # Process emergency stop
-        if not self.joy_state_prev.R2 and self.joy_state.R2:
+        if not self.joy_state_prev.L2 and self.joy_state.L2:
             self.pub_emergency.publish()
             #rospy.logwarn('Issued RESET')
             return
 
         # Process takeoff
-        if not self.joy_state_prev.L1 and self.joy_state.L1:
+        if not self.joy_state_prev.R1 and self.joy_state.R1: #Isma
             self.pub_takeoff.publish()
             #rospy.logwarn('Issued TAKEOFF')
 
         # Process manual takeoff
-        if self.joy_state.L2:
+        if self.joy_state.R2:
             self.pub_manual_takeoff.publish()
             #rospy.logwarn('Issued MANUAL_TAKEOFF')
 
         # Process throw takeoff
-        if not self.joy_state_prev.DU and self.joy_state.DU:
+        if not self.joy_state_prev.R3 and self.joy_state.R3:
             self.pub_throw_takeoff.publish()
             #rospy.logwarn('Issued THROW_TAKEOFF')
 
         # Process land
-        if not self.joy_state_prev.R1 and self.joy_state.R1:
+        if not self.joy_state_prev.L1 and self.joy_state.L1: #Isma
             self.pub_land.publish()
             #rospy.logwarn('Issued LAND')
 
         # Process palm land
-        if not self.joy_state_prev.DD and self.joy_state.DD:
+        if not self.joy_state_prev.Tr and self.joy_state.Tr:#Isma
             self.pub_palm_land.publish()
             #rospy.logwarn('Issued PALM_LAND')
 
         # Process flat trim
-        if not self.joy_state_prev.Cr and self.joy_state.Cr:
+        if not self.joy_state_prev.L3 and self.joy_state.L3:
             self.pub_flattrim.publish()
             #rospy.logwarn('Issued FLATTRIM')
             
         # Process video mode
-        if not self.joy_state_prev.Tr and self.joy_state.Tr:
+        if not self.joy_state_prev.Ci and self.joy_state.Ci:
             self.pub_video_mode.publish()
             #rospy.logwarn('Issued VIDEO_MODE')            
 
