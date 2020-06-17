@@ -18,6 +18,15 @@ Binary release from the ROS repository:
 * ```$ catkin_make```
 * ```$ source devel/setup.bash```
 
+### Prerequisites
+```
+pip3 install av==6.0
+sudo apt-get install libavdevice-dev
+sudo apt-get install libavfilter-dev
+sudo apt-get install libavfilter-extra
+sudo apt-get install libavfilter6
+```
+
 ## Launch
 
 * Turn on Tello drone
