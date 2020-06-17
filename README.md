@@ -26,6 +26,12 @@ sudo apt-get install libavfilter-dev
 sudo apt-get install libavfilter-extra
 sudo apt-get install libavfilter6
 ```
+```
+sudo apt-get install ros-melodic-joy
+sudo apt-get install ros-melodic-camera-info-manager
+sudo apt-get install ros-melodic-camera-info-manager-py 
+sudo apt-get install ros-melodic-codec-image-transport
+```
 
 ## Launch
 
